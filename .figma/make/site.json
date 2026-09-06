@@ -1,0 +1,10 @@
+{
+  "description": "This interactive kiosk interface allows users to engage with an AI chatbot in one of nine Indian languages, enhancing accessibility and user experience.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
