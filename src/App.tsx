@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import signVideo from "./imports/sign_language.mp4";
 
 type Language = {
   key: string;
@@ -181,63 +182,26 @@ function SignAvatar({ active }: { active: boolean }) {
     const style = document.createElement("style");
     style.id = "sign-keyframes";
     style.textContent = `
-      @keyframes signLeftArm {
-        0%   { transform: rotate(-15deg); }
-        15%  { transform: rotate(-55deg); }
-        35%  { transform: rotate(-25deg); }
-        55%  { transform: rotate(-65deg); }
-        75%  { transform: rotate(-10deg); }
-        100% { transform: rotate(-15deg); }
+      @keyframes signFloat {
+        0%, 100% { transform: translateY(0px); }
+        50%       { transform: translateY(-5px); }
       }
-      @keyframes signRightArm {
-        0%   { transform: rotate(20deg); }
-        20%  { transform: rotate(58deg); }
-        40%  { transform: rotate(12deg); }
-        60%  { transform: rotate(48deg); }
-        80%  { transform: rotate(28deg); }
-        100% { transform: rotate(20deg); }
-      }
-      @keyframes signLeftFore {
-        0%   { transform: rotate(5deg); }
-        25%  { transform: rotate(-30deg); }
-        50%  { transform: rotate(20deg); }
-        75%  { transform: rotate(-15deg); }
-        100% { transform: rotate(5deg); }
-      }
-      @keyframes signRightFore {
-        0%   { transform: rotate(-5deg); }
-        25%  { transform: rotate(28deg); }
-        50%  { transform: rotate(-18deg); }
-        75%  { transform: rotate(22deg); }
-        100% { transform: rotate(-5deg); }
-      }
-      @keyframes signLeftWrist {
-        0%   { transform: rotate(0deg); }
-        30%  { transform: rotate(-25deg); }
-        60%  { transform: rotate(20deg); }
-        100% { transform: rotate(0deg); }
-      }
-      @keyframes signRightWrist {
-        0%   { transform: rotate(0deg); }
-        30%  { transform: rotate(22deg); }
-        60%  { transform: rotate(-18deg); }
-        100% { transform: rotate(0deg); }
-      }
-      @keyframes signBlink {
-        0%, 88%, 100% { scaleY: 1; transform: scaleY(1); }
-        93%            { transform: scaleY(0.08); }
+      @keyframes signBob {
+        0%, 100% { transform: translateY(0px) scale(1); }
+        50%       { transform: translateY(-3px) scale(1.012); }
       }
       @keyframes signPulse {
         0%, 100% { opacity: 1; }
-        50%       { opacity: 0.5; }
+        50%       { opacity: 0.45; }
       }
-      @keyframes signFloat {
-        0%, 100% { transform: translateY(0px); }
-        50%       { transform: translateY(-4px); }
+      @keyframes signGlow {
+        0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
+        50%       { opacity: 0.9; transform: translateX(-50%) scale(1.18); }
       }
-      @keyframes bgGlow {
-        0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-        50%       { opacity: 0.85; transform: translateX(-50%) scale(1.12); }
+      @keyframes signActive {
+        0%   { box-shadow: 0 0 0 0 rgba(105,240,174,0.5); }
+        70%  { box-shadow: 0 0 0 8px rgba(105,240,174,0); }
+        100% { box-shadow: 0 0 0 0 rgba(105,240,174,0); }
       }
     `;
     document.head.appendChild(style);
@@ -248,7 +212,7 @@ function SignAvatar({ active }: { active: boolean }) {
   return (
     <div style={{
       width: "100%", height: "100%",
-      background: "linear-gradient(180deg, #071a4a 0%, #0a2a72 55%, #0d3a8a 100%)",
+      background: "linear-gradient(180deg, #071a4a 0%, #0a2a72 60%, #0d3a8a 100%)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -256,277 +220,84 @@ function SignAvatar({ active }: { active: boolean }) {
       position: "relative",
       overflow: "hidden",
     }}>
-      {/* Floor gradient */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0, height: 32,
-        background: "linear-gradient(0deg, rgba(13,71,161,0.6) 0%, transparent 100%)",
-        pointerEvents: "none",
-      }} />
-
-      {/* Ambient glow behind figure */}
+      {/* Radial glow behind avatar */}
       <div style={{
         position: "absolute",
-        bottom: 38, left: "50%",
-        width: 90, height: 90,
+        bottom: 30, left: "50%",
+        width: 110, height: 110,
         borderRadius: "50%",
         background: active
-          ? "radial-gradient(circle, rgba(66,165,245,0.35) 0%, transparent 70%)"
-          : "radial-gradient(circle, rgba(66,165,245,0.12) 0%, transparent 70%)",
-        animation: active ? `bgGlow 2s ease-in-out infinite ${anim}` : "none",
+          ? "radial-gradient(circle, rgba(105,240,174,0.22) 0%, rgba(66,165,245,0.18) 50%, transparent 75%)"
+          : "radial-gradient(circle, rgba(66,165,245,0.10) 0%, transparent 70%)",
+        transition: "background 0.6s ease",
+        animation: active ? `signGlow 2.2s ease-in-out infinite ${anim}` : "none",
         pointerEvents: "none",
         transform: "translateX(-50%)",
-        transition: "background 0.5s",
       }} />
 
-      {/* ── Avatar figure ── */}
+      {/* Floor reflection */}
       <div style={{
-        animation: active ? `signFloat 3s ease-in-out infinite ${anim}` : "none",
-        marginBottom: 10,
+        position: "absolute", bottom: 0, left: 0, right: 0, height: 28,
+        background: "linear-gradient(0deg, rgba(13,71,161,0.55) 0%, transparent 100%)",
+        pointerEvents: "none",
+      }} />
+
+      {/* Avatar video */}
+      <div style={{
+        flex: 1,
+        display: "flex",
+        alignItems: "flex-end",
+        justifyContent: "center",
+        width: "100%",
+        overflow: "hidden",
         position: "relative",
-        filter: "drop-shadow(0 8px 14px rgba(0,0,0,0.55))",
       }}>
-        <svg width="106" height="154" viewBox="0 0 106 154" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            {/* Skin gradient */}
-            <radialGradient id="skinFace" cx="45%" cy="38%" r="58%">
-              <stop offset="0%" stopColor="#f5c5a3" />
-              <stop offset="60%" stopColor="#e8a882" />
-              <stop offset="100%" stopColor="#c97c50" />
-            </radialGradient>
-            <linearGradient id="skinArm" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#e8a882" />
-              <stop offset="100%" stopColor="#d4895e" />
-            </linearGradient>
-            <linearGradient id="skinHand" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f0b48a" />
-              <stop offset="100%" stopColor="#d48060" />
-            </linearGradient>
-            {/* Hair */}
-            <radialGradient id="hairGrad" cx="50%" cy="30%" r="60%">
-              <stop offset="0%" stopColor="#5c3317" />
-              <stop offset="100%" stopColor="#1a0a00" />
-            </radialGradient>
-            {/* Shirt */}
-            <linearGradient id="shirtGrad" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#1976D2" />
-              <stop offset="100%" stopColor="#0d47a1" />
-            </linearGradient>
-            {/* Pants */}
-            <linearGradient id="pantsGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1a237e" />
-              <stop offset="100%" stopColor="#0d1642" />
-            </linearGradient>
-            {/* Shoe */}
-            <linearGradient id="shoeGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2a2a2a" />
-              <stop offset="100%" stopColor="#111" />
-            </linearGradient>
-            {/* Eye iris */}
-            <radialGradient id="irisGrad" cx="35%" cy="35%" r="65%">
-              <stop offset="0%" stopColor="#6b4226" />
-              <stop offset="100%" stopColor="#2a1500" />
-            </radialGradient>
-          </defs>
-
-          {/* ══ SHADOW on floor ══ */}
-          <ellipse cx="53" cy="151" rx="22" ry="4" fill="rgba(0,0,0,0.35)" />
-
-          {/* ══ LEGS ══ */}
-          {/* Left leg */}
-          <path d="M36 95 Q33 118 32 140 Q34 142 39 142 Q42 142 43 140 Q42 118 42 95Z" fill="url(#pantsGrad)" />
-          {/* Right leg */}
-          <path d="M63 95 Q64 118 63 140 Q61 142 56 142 Q53 142 52 140 Q52 118 57 95Z" fill="url(#pantsGrad)" />
-          {/* Knee highlight */}
-          <ellipse cx="37" cy="118" rx="3.5" ry="2" fill="rgba(255,255,255,0.07)" />
-          <ellipse cx="60" cy="118" rx="3.5" ry="2" fill="rgba(255,255,255,0.07)" />
-
-          {/* ══ SHOES ══ */}
-          {/* Left shoe */}
-          <path d="M28 140 Q29 146 35 148 Q42 149 46 146 Q47 143 43 141 Q40 140 28 140Z" fill="url(#shoeGrad)" />
-          <path d="M28 140 Q28 143 31 144 Q34 145 28 140Z" fill="rgba(255,255,255,0.12)" />
-          {/* Right shoe */}
-          <path d="M78 140 Q77 146 71 148 Q64 149 60 146 Q59 143 63 141 Q66 140 78 140Z" fill="url(#shoeGrad)" />
-
-          {/* ══ TORSO ══ */}
-          <path d="M30 56 Q28 95 30 96 L45 98 L60 96 Q62 95 60 56 Q55 52 45 52 Q35 52 30 56Z" fill="url(#shirtGrad)" />
-          {/* Shirt shading */}
-          <path d="M30 56 Q29 75 30 96 L35 97 Q34 75 34 56Z" fill="rgba(0,0,0,0.12)" />
-          <path d="M60 56 Q61 75 60 96 L55 97 Q56 75 56 56Z" fill="rgba(0,0,0,0.08)" />
-          {/* Shirt collar V */}
-          <path d="M42 54 L45 64 L48 54" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-          {/* Shirt button line */}
-          <line x1="45" y1="64" x2="45" y2="94" stroke="rgba(255,255,255,0.12)" strokeWidth="1" strokeDasharray="2 3" />
-          {/* Chest pocket */}
-          <rect x="32" y="62" width="9" height="7" rx="1.5" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.7" />
-
-          {/* ══ NECK ══ */}
-          <path d="M41 46 Q41 54 43 55 L47 55 Q49 54 49 46Z" fill="#d4895e" />
-          {/* Neck shadow */}
-          <path d="M41 46 Q41 54 43 55 L44 55 Q43 54 42 46Z" fill="rgba(0,0,0,0.15)" />
-
-          {/* ══ LEFT ARM ══ (pivot at left shoulder ~x30,y58) */}
-          <g style={{ transformOrigin: "30px 60px", animation: `signLeftArm 2.8s ease-in-out infinite ${anim}` }}>
-            {/* Upper arm */}
-            <path d="M30 58 Q22 60 16 70 Q14 75 16 78 Q19 80 22 78 Q26 70 30 65Z" fill="url(#shirtGrad)" />
-            {/* Elbow joint */}
-            <circle cx="17" cy="77" r="4" fill="#1565C0" />
-            {/* Forearm pivot at elbow */}
-            <g style={{ transformOrigin: "17px 77px", animation: `signLeftFore 2.8s ease-in-out infinite ${anim}` }}>
-              <path d="M17 77 Q10 83 7 93 Q6 97 9 99 Q12 100 14 97 Q16 89 19 80Z" fill="url(#skinArm)" />
-              {/* Wrist / hand pivot */}
-              <g style={{ transformOrigin: "10px 97px", animation: `signLeftWrist 2.8s ease-in-out infinite ${anim}` }}>
-                {/* Palm */}
-                <path d="M7 94 Q4 97 5 103 Q7 108 12 108 Q17 107 18 103 Q18 97 15 94Z" fill="url(#skinHand)" />
-                {/* Thumb */}
-                <path d="M5 100 Q1 98 1 94 Q2 91 5 92 Q7 93 7 96Z" fill="url(#skinHand)" />
-                {/* Index finger */}
-                <path d="M9 94 Q8 88 9 84 Q10 82 12 83 Q13 84 13 88 Q13 92 12 94Z" fill="url(#skinHand)" />
-                {/* Middle finger */}
-                <path d="M12 94 Q11 87 12 83 Q13 81 15 82 Q16 83 16 87 Q16 92 15 94Z" fill="url(#skinHand)" />
-                {/* Ring finger */}
-                <path d="M15 94 Q14 88 15 84 Q16 82 18 83 Q19 84 19 88 Q18 92 17 94Z" fill="url(#skinHand)" />
-                {/* Pinky */}
-                <path d="M17 95 Q17 90 18 87 Q19 85 20 86 Q21 87 21 90 Q20 93 19 95Z" fill="url(#skinHand)" />
-                {/* Knuckle lines */}
-                <path d="M8 94 Q12 96 18 94" stroke="rgba(0,0,0,0.12)" strokeWidth="0.6" fill="none" />
-              </g>
-            </g>
-          </g>
-
-          {/* ══ RIGHT ARM ══ (pivot at right shoulder ~x60,y58) */}
-          <g style={{ transformOrigin: "70px 60px", animation: `signRightArm 2.4s ease-in-out infinite ${anim}` }}>
-            {/* Upper arm */}
-            <path d="M70 58 Q78 60 84 70 Q86 75 84 78 Q81 80 78 78 Q74 70 70 65Z" fill="url(#shirtGrad)" />
-            {/* Elbow joint */}
-            <circle cx="83" cy="77" r="4" fill="#1565C0" />
-            {/* Forearm */}
-            <g style={{ transformOrigin: "83px 77px", animation: `signRightFore 2.4s ease-in-out infinite ${anim}` }}>
-              <path d="M83 77 Q90 83 93 93 Q94 97 91 99 Q88 100 86 97 Q84 89 81 80Z" fill="url(#skinArm)" />
-              {/* Wrist/hand */}
-              <g style={{ transformOrigin: "90px 97px", animation: `signRightWrist 2.4s ease-in-out infinite ${anim}` }}>
-                {/* Palm */}
-                <path d="M93 94 Q96 97 95 103 Q93 108 88 108 Q83 107 82 103 Q82 97 85 94Z" fill="url(#skinHand)" />
-                {/* Thumb */}
-                <path d="M95 100 Q99 98 99 94 Q98 91 95 92 Q93 93 93 96Z" fill="url(#skinHand)" />
-                {/* Index */}
-                <path d="M91 94 Q92 88 91 84 Q90 82 88 83 Q87 84 87 88 Q87 92 88 94Z" fill="url(#skinHand)" />
-                {/* Middle */}
-                <path d="M88 94 Q89 87 88 83 Q87 81 85 82 Q84 83 84 87 Q84 92 85 94Z" fill="url(#skinHand)" />
-                {/* Ring */}
-                <path d="M85 94 Q86 88 85 84 Q84 82 82 83 Q81 84 81 88 Q82 92 83 94Z" fill="url(#skinHand)" />
-                {/* Pinky */}
-                <path d="M83 95 Q83 90 82 87 Q81 85 80 86 Q79 87 79 90 Q80 93 81 95Z" fill="url(#skinHand)" />
-                {/* Knuckle */}
-                <path d="M92 94 Q88 96 82 94" stroke="rgba(0,0,0,0.12)" strokeWidth="0.6" fill="none" />
-              </g>
-            </g>
-          </g>
-
-          {/* ══ HEAD ══ */}
-          {/* Hair back */}
-          <ellipse cx="45" cy="22" rx="18" ry="17" fill="url(#hairGrad)" />
-          {/* Hair side pieces */}
-          <path d="M27 22 Q25 30 27 38 Q30 36 31 30 Q30 26 27 22Z" fill="url(#hairGrad)" />
-          <path d="M63 22 Q65 30 63 38 Q60 36 59 30 Q60 26 63 22Z" fill="url(#hairGrad)" />
-
-          {/* Face */}
-          <path d="M30 24 Q30 10 45 8 Q60 10 60 24 Q61 36 58 42 Q54 48 45 48 Q36 48 32 42 Q29 36 30 24Z" fill="url(#skinFace)" />
-
-          {/* Ear left */}
-          <path d="M30 26 Q26 26 25 30 Q25 34 28 35 Q30 35 30 32Z" fill="#d4895e" />
-          <path d="M27 28 Q26 30 27 32" stroke="#c07050" strokeWidth="0.8" fill="none" />
-          {/* Ear right */}
-          <path d="M60 26 Q64 26 65 30 Q65 34 62 35 Q60 35 60 32Z" fill="#d4895e" />
-          <path d="M63 28 Q64 30 63 32" stroke="#c07050" strokeWidth="0.8" fill="none" />
-
-          {/* Eyebrows */}
-          <path d="M33 22 Q37 19 41 21" stroke="#3e1f00" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-          <path d="M49 21 Q53 19 57 22" stroke="#3e1f00" strokeWidth="1.8" strokeLinecap="round" fill="none" />
-
-          {/* Eyes — whites */}
-          <ellipse cx="37" cy="27" rx="5" ry="4" fill="white" />
-          <ellipse cx="53" cy="27" rx="5" ry="4" fill="white" />
-
-          {/* Iris + pupil left */}
-          <g style={{ transformOrigin: "37px 27px", animation: `signBlink 4s ease-in-out infinite ${anim}` }}>
-            <circle cx="37" cy="27" r="3" fill="url(#irisGrad)" />
-            <circle cx="37" cy="27" r="1.6" fill="#0a0500" />
-            <circle cx="38.2" cy="25.8" r="0.9" fill="rgba(255,255,255,0.85)" />
-            <circle cx="36" cy="28" r="0.4" fill="rgba(255,255,255,0.4)" />
-          </g>
-          {/* Eyelid crease left */}
-          <path d="M32 27 Q37 24 42 27" stroke="rgba(180,100,60,0.4)" strokeWidth="0.7" fill="none" />
-
-          {/* Iris + pupil right */}
-          <g style={{ transformOrigin: "53px 27px", animation: `signBlink 4s ease-in-out 0.06s infinite ${anim}` }}>
-            <circle cx="53" cy="27" r="3" fill="url(#irisGrad)" />
-            <circle cx="53" cy="27" r="1.6" fill="#0a0500" />
-            <circle cx="54.2" cy="25.8" r="0.9" fill="rgba(255,255,255,0.85)" />
-            <circle cx="52" cy="28" r="0.4" fill="rgba(255,255,255,0.4)" />
-          </g>
-          <path d="M48 27 Q53 24 58 27" stroke="rgba(180,100,60,0.4)" strokeWidth="0.7" fill="none" />
-
-          {/* Nose */}
-          <path d="M44 30 Q42 36 43 39 Q45 41 47 39 Q48 36 46 30Z" fill="rgba(0,0,0,0.07)" />
-          <path d="M42 39 Q45 42 48 39" stroke="#c07050" strokeWidth="1.1" strokeLinecap="round" fill="none" />
-          <circle cx="43" cy="39" r="1.2" fill="#c8806a" />
-          <circle cx="47" cy="39" r="1.2" fill="#c8806a" />
-
-          {/* Mouth */}
-          <path d="M38 43 Q45 47 52 43" stroke="#a05030" strokeWidth="1.4" strokeLinecap="round" fill="none" />
-          <path d="M40 43 Q45 45 50 43" fill="rgba(180,80,60,0.25)" />
-          {/* Lower lip */}
-          <path d="M40 44 Q45 48 50 44" stroke="rgba(200,120,90,0.5)" strokeWidth="0.8" fill="none" />
-
-          {/* Face shadow / cheek blush */}
-          <ellipse cx="35" cy="36" rx="4" ry="2.5" fill="rgba(220,120,90,0.18)" />
-          <ellipse cx="55" cy="36" rx="4" ry="2.5" fill="rgba(220,120,90,0.18)" />
-
-          {/* Hair forelock / fringe */}
-          <path d="M31 16 Q35 8 45 7 Q55 8 59 16 Q54 12 45 12 Q36 12 31 16Z" fill="#1a0a00" />
-          <path d="M32 16 Q34 10 39 9" stroke="rgba(255,255,255,0.08)" strokeWidth="1" fill="none" />
-
-          {/* ══ BELT ══ */}
-          <rect x="30" y="93" width="30" height="5" rx="2" fill="#0a1030" />
-          <rect x="43" y="93" width="6" height="5" rx="1" fill="#8a7030" />
-          <rect x="44.5" y="94" width="3" height="3" rx="0.5" fill="#c8a040" />
-
-          {/* Shirt wrinkle lines */}
-          <path d="M36 65 Q37 78 36 92" stroke="rgba(0,0,0,0.08)" strokeWidth="0.8" fill="none" />
-          <path d="M54 65 Q53 78 54 92" stroke="rgba(0,0,0,0.06)" strokeWidth="0.8" fill="none" />
-
-          {/* Pant crease */}
-          <line x1="37" y1="96" x2="35" y2="138" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
-          <line x1="58" y1="96" x2="60" y2="138" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
-        </svg>
+        <video
+          src={signVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            display: "block",
+            filter: active
+              ? "drop-shadow(0 0 8px rgba(105,240,174,0.4)) brightness(1.05)"
+              : "brightness(0.95)",
+            transition: "filter 0.5s ease",
+          }}
+        />
       </div>
 
-      {/* Label bar */}
+      {/* Status label */}
       <div style={{
-        background: "rgba(255,255,255,0.09)",
-        border: "1px solid rgba(255,255,255,0.18)",
-        borderRadius: 6,
-        padding: "4px 10px",
-        marginBottom: 7,
+        flexShrink: 0,
+        background: "rgba(0,0,20,0.55)",
+        borderTop: "1px solid rgba(255,255,255,0.12)",
+        width: "100%",
+        padding: "5px 8px",
         textAlign: "center",
-        backdropFilter: "blur(4px)",
+        backdropFilter: "blur(6px)",
       }}>
         <div style={{
           color: "#E3F2FD", fontSize: 8, fontWeight: 700,
-          letterSpacing: "0.12em", textTransform: "uppercase",
+          letterSpacing: "0.13em", textTransform: "uppercase",
+          marginBottom: 3,
         }}>
-          🤟 AI Sign Language
+          AI Sign Language
         </div>
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 5, marginTop: 2,
-        }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
           <div style={{
-            width: 5, height: 5, borderRadius: "50%",
+            width: 6, height: 6, borderRadius: "50%",
             background: active ? "#69F0AE" : "#90CAF9",
-            boxShadow: active ? "0 0 6px #69F0AE" : "none",
-            animation: active ? `signPulse 1s ease-in-out infinite ${anim}` : "none",
+            boxShadow: active ? "0 0 7px #69F0AE" : "none",
+            animation: active ? `signPulse 1.1s ease-in-out infinite ${anim}` : "none",
+            transition: "background 0.4s, box-shadow 0.4s",
           }} />
-          <span style={{ color: "#BBDEFB", fontSize: 7, fontWeight: 600 }}>
+          <span style={{ color: "#BBDEFB", fontSize: 7.5, fontWeight: 600, letterSpacing: "0.05em" }}>
             {active ? "Interpreting..." : "Standby"}
           </span>
         </div>
@@ -588,7 +359,6 @@ function ChatScreen({ lang, onBack }: { lang: Language; onBack: () => void }) {
         gap: 8,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 14 }}>🤟</span>
           <span style={{ color: "#FFFFFF", fontSize: 14, fontWeight: 700 }}>
             {lang.name}
           </span>
@@ -615,22 +385,29 @@ function ChatScreen({ lang, onBack }: { lang: Language; onBack: () => void }) {
         </button>
       </div>
 
-      {/* Body: sign avatar + chat side by side */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "row", minHeight: 0 }}>
+      {/* Body: full-width chat with PiP video overlay */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, position: "relative" }}>
 
-        {/* ── Sign Language Avatar Panel ── */}
+        {/* ── Picture-in-picture sign language box ── */}
         <div style={{
-          width: 130,
-          flexShrink: 0,
-          borderRight: "1.5px solid rgba(25,118,210,0.2)",
-          display: "flex",
-          flexDirection: "column",
+          position: "absolute",
+          bottom: 58,
+          left: 10,
+          width: 120,
+          height: 144,
+          borderRadius: 10,
           overflow: "hidden",
+          zIndex: 20,
+          boxShadow: signing
+            ? "0 0 0 2px #69F0AE, 0 4px 16px rgba(0,0,0,0.45)"
+            : "0 0 0 2px rgba(25,118,210,0.5), 0 4px 14px rgba(0,0,0,0.35)",
+          transition: "box-shadow 0.4s ease",
+          background: "#071a4a",
         }}>
           <SignAvatar active={signing} />
         </div>
 
-        {/* ── Chat Panel ── */}
+        {/* ── Chat messages ── */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
           {/* Messages */}
           <div style={{
