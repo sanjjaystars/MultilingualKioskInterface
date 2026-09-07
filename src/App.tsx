@@ -289,18 +289,19 @@ function SignAvatar({ active }: { active: boolean }) {
         }}>
           AI Sign Language
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
-          <div style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: active ? "#69F0AE" : "#90CAF9",
-            boxShadow: active ? "0 0 7px #69F0AE" : "none",
-            animation: active ? `signPulse 1.1s ease-in-out infinite ${anim}` : "none",
-            transition: "background 0.4s, box-shadow 0.4s",
-          }} />
-          <span style={{ color: "#BBDEFB", fontSize: 7.5, fontWeight: 600, letterSpacing: "0.05em" }}>
-            {active ? "Interpreting..." : "Standby"}
-          </span>
-        </div>
+        {active && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}>
+            <div style={{
+              width: 6, height: 6, borderRadius: "50%",
+              background: "#69F0AE",
+              boxShadow: "0 0 7px #69F0AE",
+              animation: `signPulse 1.1s ease-in-out infinite ${anim}`,
+            }} />
+            <span style={{ color: "#BBDEFB", fontSize: 7.5, fontWeight: 600, letterSpacing: "0.05em" }}>
+              Interpreting...
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -577,7 +578,7 @@ export default function App() {
   return (
     <div style={{
       width: "100%", height: "100%",
-      background: "#3a4450",
+      background: "#b8cce8",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
